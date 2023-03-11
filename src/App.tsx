@@ -31,35 +31,19 @@ function App() {
     setText("");
   };
 
-  const handleEdit = (id: number, value: string) => {
+  const handleTodo = <
+    T extends Todo["id"],
+    U extends keyof Todo,
+    V extends Todo[U]
+  >(
+    id: T,
+    key: U,
+    value: V
+  ) => {
     const deepCopy = todos.map((todo) => ({ ...todo }));
     const newTodos = deepCopy.map((todo) => {
       if (id === todo.id) {
-        todo.value = value;
-      }
-      return todo;
-    });
-    setTodos(newTodos);
-  };
-
-  const handleCheck = (id: number, checked: boolean) => {
-    const deepCopy = todos.map((todo) => ({ ...todo }));
-
-    const newTodos = deepCopy.map((todo) => {
-      if (todo.id === id) {
-        todo.checked = !checked;
-      }
-      return todo;
-    });
-
-    setTodos(newTodos);
-  };
-
-  const handleDelete = (id: number, deleted: boolean) => {
-    const deepCopy = todos.map((todo) => ({ ...todo }));
-    const newTodos = deepCopy.map((todo) => {
-      if (todo.id === id) {
-        todo.deleted = !deleted;
+        todo[key] = value;
       }
       return todo;
     });
@@ -127,15 +111,17 @@ function App() {
                 type="checkbox"
                 disabled={todo.deleted}
                 checked={todo.checked}
-                onChange={(e) => handleCheck(todo.id, todo.checked)}
+                onChange={() => handleTodo(todo.id, "checked", !todo.checked)}
               />
               <input
                 type="text"
                 disabled={todo.checked || todo.deleted}
                 value={todo.value}
-                onChange={(e) => handleEdit(todo.id, e.target.value)}
+                onChange={(e) => handleTodo(todo.id, "value", e.target.value)}
               />
-              <button onClick={() => handleDelete(todo.id, todo.deleted)}>
+              <button
+                onClick={() => handleTodo(todo.id, "deleted", !todo.deleted)}
+              >
                 {todo.deleted ? "復元" : "削除"}
               </button>
             </li>
